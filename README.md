@@ -4,6 +4,7 @@ This is a small library to help with command-line option/argument parsing.
 
 Why not just use an existing argument parsing package?  Writing one for myself provided an excuse to use C++20 language features.
 
+![Github Docker CI](https://github.com/mchapman87501/arg_parse/actions/workflows/docker-image.yml/badge.svg)
 ## Building
 
 ### On Host
