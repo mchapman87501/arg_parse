@@ -15,8 +15,6 @@ In order to build and test on macOS or linux you'll need the following (at least
 * A C++ compiler ;)
 * [Catch2](https://github.com/catchorg/Catch2)
 * [lcov](https://github.com/linux-test-project/lcov.git)
-* [OpenCV](https://docs.opencv.org/4.5.5/) 
-* [LibRaw](https://www.libraw.org/docs/API-CXX.html)
 
 #### Compilation
 
