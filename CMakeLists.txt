@@ -7,6 +7,15 @@ set(version_patch 0)
 set(version ${version_major}.${version_minor}.${version_patch})
 project(arg_parse VERSION ${version})
 
+# Facilitate *not* building tests when using arg_parse via FetchContent_MakeAvailable.
+# See https://github.com/glfw/glfw/blob/master/CMakeLists.txt
+# (via https://discourse.cmake.org/t/fetchcontent-vs-build-testing/4477)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    set(ARG_PARSE_STANDALONE TRUE)
+endif()
+
+option(ARG_PARSE_BUILD_TESTS "Build the test targets" ${ARG_PARSE_STANDALONE})
+
 set(SOURCES
     src/argument_parser.cpp
     src/flag.cpp
@@ -94,11 +103,13 @@ export(EXPORT arg_parse_targets
     NAMESPACE arg_parse::
 )
 
-include(cmake_modules/CodeCoverage.cmake)
-find_package(Catch2 3 REQUIRED)
-enable_testing()
+if(ARG_PARSE_BUILD_TESTS)
+    include(cmake_modules/CodeCoverage.cmake)
+    find_package(Catch2 3 REQUIRED)
+    enable_testing()
 
-include(CTest)
-include(Catch)
+    include(CTest)
+    include(Catch)
 
-add_subdirectory(tests EXCLUDE_FROM_ALL)
+    add_subdirectory(tests)
+endif()
