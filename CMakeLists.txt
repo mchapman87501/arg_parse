@@ -16,6 +16,7 @@ set(SOURCES
 
 add_library(arg_parse SHARED ${SOURCES})
 target_compile_features(arg_parse PUBLIC cxx_std_20)
+add_library(arg_parse::arg_parse ALIAS arg_parse)
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
