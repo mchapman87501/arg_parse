@@ -24,7 +24,7 @@ add_custom_command(TARGET test_arg_parse
     COMMAND find ${CMAKE_BINARY_DIR} -name '*.gcda' -exec rm "{}" "';'"
 )
 
-setup_target_for_coverage_lcov(NAME coverage_report
+setup_target_for_coverage_lcov(NAME arg_parse_coverage_report
     EXECUTABLE ctest
     DEPENDENCIES
     test_arg_parse
