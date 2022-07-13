@@ -104,6 +104,7 @@ export(EXPORT arg_parse_targets
 )
 
 if(ARG_PARSE_BUILD_TESTS)
+    message(STATUS "Enable ARG_PARSE_BUILD_TESTS testing.")
     include(cmake_modules/CodeCoverage.cmake)
     find_package(Catch2 3 REQUIRED)
     enable_testing()
