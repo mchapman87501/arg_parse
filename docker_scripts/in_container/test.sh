@@ -1,22 +1,9 @@
 #!/bin/sh
 set -e -u
 
+HERE=$(dirname "$0")
+echo "Here is ${HERE}."
 
-cd
-mkdir -p build/debug
-cd build/debug
-
-cmake -DCMAKE_BUILD_TYPE=Debug /source
-
-# Defer checking for test failures so we can 
-# copy any test output to build_artifacts.
-set +e
-cmake --build . --target arg_parse_coverage_report
-STATUS=$?
-
-set -e
-mkdir -p /source/build_artifacts
-tar cf - Testing | (cd /source/build_artifacts && tar xf - )
-tar cf - arg_parse_coverage_report | (cd /source/build_artifacts && tar xf - )
-
-exit ${STATUS}
+cd ${HERE}
+sh ./test_with_coverage.sh
+sh ./test_installed.sh
