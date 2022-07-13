@@ -16,7 +16,7 @@ namespace ArgParse {
  * @tparam T The C++ type of the positional argument
  */
 template <typename T> struct Argument : public IArgument {
-  using Ptr = std::shared_ptr<Argument>;
+  using Ptr = std::shared_ptr<Argument<T>>;
 
   /**
    * @brief Create a new argument specification.

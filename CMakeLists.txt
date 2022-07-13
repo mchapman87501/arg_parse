@@ -43,6 +43,7 @@ set(HEADERS
     include/arg_parse.hpp
     include/argument_parser.hpp
     include/argument.hpp
+    include/convenience.hpp
     include/flag.hpp
     include/help_fmt.hpp
     include/i_argument.hpp

@@ -19,11 +19,11 @@ TEST_CASE("Invalid invocation") {
 TEST_CASE("Show help") {
   using namespace ArgParse;
 
-  auto short_flag = Flag::create("-s", "-s", "Short flag.", true);
-  auto long_flag = Flag::create("-l", "--long", "Long flag.", true);
+  auto short_flag = Flag::create("-s", "-s", "Short flag.");
+  auto long_flag = Flag::create("-l", "--long", "Long flag.");
   // This is a hokey way to define a flag/option that has only a long name:
-  auto long_only_flag = Flag::create("--long-only", "--long-only",
-                                     "I have only a long name.", false);
+  auto long_only_flag =
+      Flag::create("--long-only", "--long-only", "I have only a long name.");
   // Explicit booleans are supported, but the values must be 0 or 1.
   auto ltuae = Option<bool>::create("--42", "--42",
                                     "Whether or not to show the answer.");
@@ -72,7 +72,7 @@ TEST_CASE("Show help") {
 TEST_CASE("Invoke no args") {
   using namespace ArgParse;
 
-  auto flag = Flag::create("-v", "--verbose", "Show a lot of detail.", false);
+  auto flag = Flag::create("-v", "--verbose", "Show a lot of detail.");
   auto output = Option<std::filesystem::path>::create(
       "-o", "--output", "Where to write the output.");
   auto inputs = Argument<double>::create("values_to_add", Nargs::one,
@@ -99,24 +99,45 @@ TEST_CASE("Using Flags and Options") {
 
   auto parser = ArgumentParser::create("Parse some stuff.");
 
-  SECTION("Using Default Unset Flags") {
-    // What's the point of anything other than a default-unset flag?
-    // If a flag is set by default, there's no way to unset
-    // it. For this you'd need to use Option<bool>.
-    auto flag = Flag::create("-v", "--verbose", "Show a lot of detail", false);
+  SECTION("Setting Flags") {
+    auto flag = Flag::create("-f", "--flag", "a flag");
     parser->add_option(flag);
 
-    ArgSeq args{"<exe>"};
-    parser->parse_args(args);
+    SECTION("Unset") {
+      ArgSeq args{"<exe>"};
+      parser->parse_args(args);
+      CHECK(!parser->should_exit());
+      CHECK(!flag->is_set());
+    }
 
-    CHECK(!parser->should_exit());
-    CHECK(!flag->is_set());
+    SECTION("Short") {
+      ArgSeq args{"<exe>", "-f"};
+      parser->parse_args(args);
+      CHECK(!parser->should_exit());
+      CHECK(flag->is_set());
+    }
+
+    SECTION("Long") {
+      ArgSeq args{"<exe>", "--flag"};
+      parser->parse_args(args);
+      CHECK(!parser->should_exit());
+      CHECK(flag->is_set());
+    }
   }
 
   SECTION("Using short|long Options") {
     auto output = Option<std::filesystem::path>::create(
         "-o", "--output", "Where to write the output");
     parser->add_option(output);
+
+    SECTION("Typed Options") {
+      auto v = Option<int>::create("-v", "--value", "Integer value");
+      parser->add_option(v);
+      ArgSeq args{"<exe>", "--value", "-7"};
+      parser->parse_args(args);
+      CHECK(!parser->should_exit());
+      CHECK(v->value() == -7);
+    }
 
     SECTION("Invoke with short option") {
       const std::string out_filename = "foo_bar.txt";
@@ -171,14 +192,6 @@ TEST_CASE("Using Flags and Options") {
 
       ArgSeq args{"<exe>", "--output=", "the required value"};
       Tests::ArgParseResult apr(parser, args, true, 1);
-
-      // XXX FIX THIS:
-      //   positional args of type string truncate values at first whitespace
-      //   positional args and options with numeric types truncate at first
-      //       non-number character
-      //   const std::vector<std::string> expected{"the required value"};
-      //   CHECK(required_value->values() == expected);
-
       CHECK(output->value() == std::filesystem::path(""));
     }
 
@@ -202,7 +215,7 @@ TEST_CASE("Using Flags and Options") {
   }
 
   SECTION("Using default flags and options") {
-    auto flag = Flag::create("-v", "--verbose", "Show a lot of detail", false);
+    auto flag = Flag::create("-v", "--verbose", "Show a lot of detail");
     auto output = Option<std::filesystem::path>::create(
         "-o", "--output", "Where to write the output");
     auto x = Argument<int>::create("x", Nargs::one, "X value.");
@@ -408,5 +421,55 @@ TEST_CASE("Using argc, argv") {
     std::vector<std::string> expected{"une", "två", "drei"};
     auto actual = arguments->values();
     CHECK(actual == expected);
+  }
+}
+
+TEST_CASE("Convenience functions") {
+  using namespace ArgParse;
+
+  const std::string description("Test convenience functions.");
+  auto parser = ArgumentParser::create(description);
+
+  auto short_flag = flag(parser, "-s", "-s", "Short flag.");
+  auto long_flag = flag(parser, "-l", "--long", "Long flag.");
+  auto ltuae = option<bool>(parser, "--42", "--42",
+                            "Whether or not to show the answer.");
+
+  auto one = argument<std::string>(parser, "one", Nargs::one, "One arg.");
+  auto some =
+      argument<double>(parser, "some", Nargs::one_or_more, "One or more.");
+
+  SECTION("Help") {
+    ArgSeq args{"<exe>", "--help"};
+    Tests::ArgParseResult apr(parser, args, true, 0);
+    CHECK(apr.cout_contains(description));
+    CHECK(apr.cout_contains("Usage:"));
+    std::vector<std::string> placeholders{
+        "--42 42]",
+        "ONE",
+        "SOME [SOME ...]",
+    };
+    for (const auto ph : placeholders) {
+      // If one of these tests fails, Catch2 makes it hard to see the actual
+      // value of ph. hence this.
+      if (!apr.cout_contains(ph)) {
+        std::cerr << "Output does not contain '" << ph << "'." << std::endl;
+        CHECK(apr.cout_contains(ph));
+      }
+    }
+  }
+
+  SECTION("Verify options/args were added to parser") {
+    ArgSeq args{"<exe>", "-s", "--long", "--42=1", "une", "2", "3"};
+    Tests::ArgParseResult apr(parser, args, true, 0);
+    CHECK(short_flag->is_set());
+    CHECK(long_flag->is_set());
+    CHECK(ltuae->value());
+
+    std::vector<std::string> one_expected{"une"};
+    CHECK(one->values() == one_expected);
+
+    std::vector<double> some_expected{2.0, 3.0};
+    CHECK(some->values() == some_expected);
   }
 }

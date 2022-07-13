@@ -5,9 +5,9 @@ namespace ArgParse {
 
 struct FlagImpl : public Flag {
   FlagImpl(std::string_view short_name, std::string_view long_name,
-           std::string_view help_msg, bool default_value)
+           std::string_view help_msg)
       : m_short(short_name), m_long(long_name), m_help_msg(help_msg),
-        m_is_set(default_value) {}
+        m_is_set(false) {}
 
   std::string usage() const override {
     return Internal::flag_usage_str(m_short, m_long);
@@ -40,9 +40,8 @@ private:
 };
 
 Flag::Ptr Flag::create(std::string_view short_name, std::string_view long_name,
-                       std::string_view help_msg, bool default_value) {
-  return std::make_shared<FlagImpl>(short_name, long_name, help_msg,
-                                    default_value);
+                       std::string_view help_msg) {
+  return std::make_shared<FlagImpl>(short_name, long_name, help_msg);
 }
 
 } // namespace ArgParse

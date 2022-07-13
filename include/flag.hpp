@@ -18,12 +18,10 @@ struct Flag : public virtual IOption {
    * @param short_name The short, single-dash name of this flag ("-v")
    * @param long_name The long, double-dash name of this flag ("--verbose")
    * @param help_msg A description of the purpose of this flag
-   * @param default_value The value to which this flag should default, if it
-   * isn't specified on the command line.
    * @return Ptr A pointer to the new instance.
    */
   static Ptr create(std::string_view short_name, std::string_view long_name,
-                    std::string_view help_msg, bool default_value = false);
+                    std::string_view help_msg);
 
   /**
    * @brief Find out whether this flag is set.  Call

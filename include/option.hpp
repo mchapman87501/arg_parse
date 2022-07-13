@@ -24,7 +24,7 @@ ParseResult parse_and_set(std::string_view short_name,
  * @tparam T The type of the value for this option spec.
  */
 template <typename T> struct Option : public IOption {
-  using Ptr = std::shared_ptr<Option>;
+  using Ptr = std::shared_ptr<Option<T>>;
 
   /**
    * @brief Create a new command-line option spec.
