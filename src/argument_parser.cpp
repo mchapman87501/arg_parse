@@ -99,6 +99,14 @@ private:
   }
 
 public:
+  void parse_args(int argc, char *argv[]) override {
+    ArgSeq args;
+    for (int i = 0; i < argc; ++i) {
+      args.push_back(argv[i]);
+    }
+    parse_args(args);
+  }
+
   void parse_args(const ArgSeq &args) override {
     if (args.empty()) {
       show_error("Internal Error: empty args vector", 2);

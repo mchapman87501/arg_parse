@@ -47,6 +47,15 @@ struct ArgumentParser {
   virtual void parse_args(const ArgSeq &args) = 0;
 
   /**
+   * @brief Parse a sequence of command-line arguments.
+   * This overload eases use from `int main(int argc, char *argv[])`.
+   *
+   * @param argc The number of command-line arguments
+   * @param argv Array of command-line arguments
+   */
+  virtual void parse_args(int argc, char *argv[]) = 0;
+
+  /**
    * @brief Find out whether or not the program should exit due to invalid
    * command-line arguments. Call this after calling parse_args.
    *

@@ -373,3 +373,40 @@ TEST_CASE("Detect invalid values") {
     CHECK(option->value() == "word after word");
   }
 }
+
+TEST_CASE("Using argc, argv") {
+  using namespace ArgParse;
+
+  auto parser = ArgumentParser::create("test the argc, argv interface");
+  auto arguments = Argument<std::string>::create(
+      "aargh", Nargs::zero_or_more, "Any arguments you care to provide.");
+  parser->add_arg(arguments);
+
+  SECTION("No args") {
+    const char *argv[] = {"<exe>"};
+    int argc = 1;
+    parser->parse_args(argc, (char **)argv);
+    CHECK(!parser->should_exit());
+    CHECK(arguments->values().empty());
+  }
+
+  SECTION("one arg") {
+    const char *argv[] = {"<exe>", "ett"};
+    int argc = 2;
+    parser->parse_args(argc, (char **)argv);
+    CHECK(!parser->should_exit());
+    std::vector<std::string> expected{"ett"};
+    auto actual = arguments->values();
+    CHECK(actual == expected);
+  }
+
+  SECTION("Multiple args") {
+    const char *argv[] = {"<exe>", "une", "två", "drei"};
+    int argc = 4;
+    parser->parse_args(argc, (char **)argv);
+    CHECK(!parser->should_exit());
+    std::vector<std::string> expected{"une", "två", "drei"};
+    auto actual = arguments->values();
+    CHECK(actual == expected);
+  }
+}

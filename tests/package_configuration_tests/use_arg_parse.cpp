@@ -10,12 +10,7 @@ int main(int argc, char **argv) {
   auto verbose = Flag::create("-v", "--verbose", "Be verbose.");
   parser->add_option(verbose);
 
-  ArgSeq args;
-  for (int i = 0; i < argc; ++i) {
-    args.push_back(argv[i]);
-  }
-
-  parser->parse_args(args);
+  parser->parse_args(argc, argv);
   if (parser->should_exit()) {
     return parser->exit_code();
   }

@@ -26,12 +26,13 @@ cmake -DCMAKE_BUILD_TYPE=Release ${SRC_ROOT}
 cmake --build .
 # Install it to ../install
 cmake --install . --prefix ${TEST_ROOT}/install
+cd ..
 
 # Test the config by building the sample project.
-cd ..
 mkdir build_sample_proj
 cd build_sample_proj
-
 cmake -DCMAKE_PREFIX_PATH=${TEST_ROOT}/install ${TEST_SRC_DIR}
 cmake --build .
+
+./use_arg_parse --verbose
 ```
