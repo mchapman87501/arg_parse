@@ -5,6 +5,33 @@ This is a small library to help with command-line option/argument parsing.
 Why not just use an existing argument parsing package?  Writing one for myself provided an excuse to use C++20 language features.
 
 ![Github Docker CI](https://github.com/mchapman87501/arg_parse/actions/workflows/docker-image.yml/badge.svg)
+
+## Examples
+
+See `tests/package_configuration_tests/use_arg_parse.cpp`, and `tests/src/test_arg_parse.cpp`.
+
+
+```c++
+#include "arg_parse.hpp"
+#include <iostream>
+
+int main(int argc, char **argv) {
+  auto parser = ArgParse::ArgumentParser::create("Example program");
+  auto verbose = ArgParse::Flag::create("-v", "--verbose", "Be verbose.");
+  parser->add_option(verbose);
+
+  parser->parse_args(argc, argv);
+  if (parser->should_exit()) {
+    return parser->exit_code();
+  }
+
+  if (verbose->is_set()) {
+    std::cout << "Here is some verbose output." << std::endl;
+  }
+  return 0;
+}
+```
+
 ## Building
 
 ### On Host
