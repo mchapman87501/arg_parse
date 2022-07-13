@@ -17,8 +17,7 @@ See `tests/package_configuration_tests/use_arg_parse.cpp`, and `tests/src/test_a
 
 int main(int argc, char **argv) {
   auto parser = ArgParse::ArgumentParser::create("Example program");
-  auto verbose = ArgParse::Flag::create("-v", "--verbose", "Be verbose.");
-  parser->add_option(verbose);
+  auto verbose = ArgParse::flag(parser, "-v", "--verbose", "Be verbose.");
 
   parser->parse_args(argc, argv);
   if (parser->should_exit()) {
