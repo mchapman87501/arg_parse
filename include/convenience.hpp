@@ -8,6 +8,15 @@
 
 namespace ArgParse {
 
+/**
+ * @brief Add a new Flag to an ArgumentParser.
+ *
+ * @param parser The Parser to which to add the Flag
+ * @param short_name The short, single-dash name of the Flag ("-v")
+ * @param long_name The long, double-dash name of the Flag ("--verbose")
+ * @param help_msg A description of the purpose of the Flag
+ * @return Flag::Ptr The new Flag
+ */
 Flag::Ptr flag(ArgumentParser::Ptr parser, std::string_view short_name,
                std::string_view long_name, std::string_view help_msg) {
   auto result = Flag::create(short_name, long_name, help_msg);
@@ -15,6 +24,16 @@ Flag::Ptr flag(ArgumentParser::Ptr parser, std::string_view short_name,
   return result;
 }
 
+/**
+ * @brief Add a new Option to an ArgumentParser.
+ *
+ * @tparam T The type of value held by the Option
+ * @param parser The Parser to which to add the Option
+ * @param short_name The short, single-dash name of the Option ("-o")
+ * @param long_name The long, double-dash name of the Option ("--output")
+ * @param help_msg A description of the purpose of the Option
+ * @return auto The new Option
+ */
 template <typename T>
 auto option(ArgumentParser::Ptr parser, std::string_view short_name,
             std::string_view long_name, std::string_view help_msg) {
@@ -23,6 +42,16 @@ auto option(ArgumentParser::Ptr parser, std::string_view short_name,
   return result;
 }
 
+/**
+ * @brief Add a new Argument to an ArgumentParser.
+ *
+ * @tparam T The type of value(s) held by the Argument
+ * @param parser The Parser to which to add the Argument
+ * @param name The Argument's name
+ * @param nargs The number of values the Argument can accept
+ * @param help_msg A description of the purpose of the Argument
+ * @return auto The new Argument
+ */
 template <typename T>
 auto argument(ArgumentParser::Ptr parser, std::string_view name, Nargs nargs,
               std::string_view help_msg) {

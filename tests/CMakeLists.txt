@@ -4,7 +4,7 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 endif()
 
 string(REPLACE "src/" ";../src/" COV_SOURCES ${SOURCES})
-message(STATUS "Coverage library sources: ${COV_SOURCES}")
+
 add_library(arg_parse_cov STATIC ${COV_SOURCES})
 target_compile_features(arg_parse_cov PUBLIC cxx_std_20)
 target_include_directories(arg_parse_cov PUBLIC ../include)
