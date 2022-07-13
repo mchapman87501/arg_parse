@@ -31,13 +31,20 @@ string usage_str(string_view short_name, string_view long_name) {
 
 string bracketed(string_view s) { return string("[") + s.data() + "]"; }
 
+string flag_help_title(string_view short_name, string_view long_name) {
+  return usage_str(short_name, long_name);
+}
+
+string option_help_title(string_view short_name, string_view long_name) {
+  return usage_str(short_name, long_name) + " " + value_name(long_name);
+}
+
 string flag_usage_str(string_view short_name, string_view long_name) {
-  return bracketed(usage_str(short_name, long_name));
+  return bracketed(flag_help_title(short_name, long_name));
 }
 
 string option_usage_str(string_view short_name, string_view long_name) {
-  return bracketed(usage_str(short_name, long_name) + " " +
-                   value_name(long_name));
+  return bracketed(option_help_title(short_name, long_name));
 }
 
 string arg_usage_str(string_view arg_name, Nargs nargs) {
@@ -62,12 +69,12 @@ string help_block(string_view usage_label, string_view help_msg) {
 
 string flag_help_block(string_view short_name, string_view long_name,
                        string_view help_msg) {
-  return help_block(flag_usage_str(short_name, long_name), help_msg);
+  return help_block(flag_help_title(short_name, long_name), help_msg);
 }
 
 string option_help_block(string_view short_name, string_view long_name,
                          string_view help_msg) {
-  return help_block(option_usage_str(short_name, long_name), help_msg);
+  return help_block(option_help_title(short_name, long_name), help_msg);
 }
 
 string arg_help_block(string_view arg_name, Nargs nargs, string_view help_msg) {

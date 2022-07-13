@@ -23,5 +23,5 @@ mkdir pkg_consumer
 cd pkg_consumer
 cmake -DCMAKE_PREFIX_PATH=${INSTALL_DIR} /source/tests/package_configuration_tests
 cmake --build .
-./use_arg_parse --verbose
 
+./use_arg_parse --help
