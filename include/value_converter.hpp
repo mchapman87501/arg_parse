@@ -7,6 +7,11 @@
 
 namespace ArgParse::Internal {
 
+std::string invalid_value_msg(std::string_view name, std::string_view sval);
+
+std::string incomplete_conversion_msg(std::string_view name,
+                                      std::string_view sval);
+
 template <typename T> struct ValueConverter {
   T m_value;
   OptErrMsg m_err_msg;
@@ -19,11 +24,9 @@ template <typename T> struct ValueConverter {
 
       ins >> m_value;
       if (ins.fail()) {
-        m_err_msg = std::string("Invalid value for '") + name.data() + "': '" +
-                    ins.str() + "'.";
+        m_err_msg = invalid_value_msg(name, sval);
       } else if (!ins.eof()) {
-        m_err_msg = std::string("Could not completely convert value for '") +
-                    name.data() + "': '" + ins.str() + "'.";
+        m_err_msg = incomplete_conversion_msg(name, sval);
       }
     }
   }

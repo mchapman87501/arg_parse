@@ -46,6 +46,12 @@ template <typename T> struct Option : public IOption {
           if (converter.m_err_msg) {
             return converter.m_err_msg;
           }
+
+          // Do any Option-specific validation.
+          if (!valid_value(converter.m_value)) {
+            return Internal::invalid_value_msg(name, sval);
+          }
+
           m_value = converter.m_value;
           return {};
         }};
@@ -70,16 +76,17 @@ template <typename T> struct Option : public IOption {
   }
 
 protected:
-  Option(std::string_view short_name, std::string_view long_name,
-         std::string_view help_msg)
-      : m_short(short_name), m_long(long_name), m_help_msg(help_msg) {}
-
-private:
   const std::string m_short;
   const std::string m_long;
   const std::string m_help_msg;
 
   T m_value;
+
+  Option(std::string_view short_name, std::string_view long_name,
+         std::string_view help_msg)
+      : m_short(short_name), m_long(long_name), m_help_msg(help_msg) {}
+
+  virtual bool valid_value(const T &v) { return true; }
 };
 
 } // namespace ArgParse

@@ -5,6 +5,7 @@
 
 #include <filesystem>
 #include <iostream>
+#include <stdexcept>
 
 TEST_CASE("Invalid invocation") {
   using namespace ArgParse;
@@ -30,10 +31,13 @@ TEST_CASE("Show help") {
   auto output = Option<std::filesystem::path>::create(
       "-o", "--output", "Where to write the output.");
 
-  // The API does not prevent creation of impossible positional arg sequences:
-  // Nargs::one_or_more means or Nargs::zero_or_more no subsequent positional
-  // args will be able to consume any arguments, unless the user interposes a
-  // flag or option.
+  auto some_choices =
+      Choice::create("-c", "--choice", "Some choices.", {"c1", "Choice Two"});
+
+  // The API does not prevent creation of impossible positional arg
+  // sequences: Nargs::one_or_more means or Nargs::zero_or_more no
+  // subsequent positional args will be able to consume any arguments,
+  // unless the user interposes a flag or option.
   auto one = Argument<std::string>::create("one", Nargs::one, "One arg.");
   auto some = Argument<int>::create("some", Nargs::one_or_more, "One or more.");
   auto any = Argument<double>::create("any", Nargs::zero_or_more, "Any.");
@@ -45,12 +49,14 @@ TEST_CASE("Show help") {
   parser->add_option(long_only_flag);
   parser->add_option(ltuae);
   parser->add_option(output);
+  parser->add_option(some_choices);
   parser->add_arg(one);
   parser->add_arg(some);
   parser->add_arg(any);
 
   ArgSeq args{"<exe>", "--help"};
   Tests::ArgParseResult apr(parser, args, true, 0);
+  CHECK(apr.check_outcome());
   CHECK(apr.cout_contains(description));
   CHECK(apr.cout_contains("Usage:"));
   // Verify presence of placeholder values for options and for positional args.
@@ -86,6 +92,7 @@ TEST_CASE("Invoke no args") {
 
   ArgSeq args{"<exe>"};
   Tests::ArgParseResult apr(parser, args, true, 1);
+  CHECK(apr.check_outcome());
 
   CHECK(!flag->is_set());
   CHECK(output->value() == std::filesystem::path(""));
@@ -192,6 +199,7 @@ TEST_CASE("Using Flags and Options") {
 
       ArgSeq args{"<exe>", "--output=", "the required value"};
       Tests::ArgParseResult apr(parser, args, true, 1);
+      CHECK(apr.check_outcome());
       CHECK(output->value() == std::filesystem::path(""));
     }
 
@@ -202,6 +210,7 @@ TEST_CASE("Using Flags and Options") {
 
       ArgSeq args{"<exe>", "-n", "not a number"};
       Tests::ArgParseResult apr(parser, args, true, 1);
+      CHECK(apr.check_outcome());
 
       CHECK(apr.cerr_contains("Invalid value"));
     }
@@ -209,6 +218,7 @@ TEST_CASE("Using Flags and Options") {
     SECTION("Invoke with unknown option") {
       ArgSeq args{"<exe>", "--number", "42"};
       Tests::ArgParseResult apr(parser, args, true, 1);
+      CHECK(apr.check_outcome());
       CHECK(apr.cerr_contains("Unknown option"));
       CHECK(apr.cerr_contains("--number"));
     }
@@ -227,9 +237,67 @@ TEST_CASE("Using Flags and Options") {
     ArgSeq args{"<exe>", "42"};
 
     Tests::ArgParseResult apr(parser, args, false, 0);
+    CHECK(apr.check_outcome());
     CHECK(!flag->is_set());
     CHECK(x->values() == std::vector<int>{42});
     CHECK(output->value() == std::filesystem::path(""));
+  }
+}
+
+namespace {
+using namespace ArgParse;
+auto create_no_option() {
+  std::vector<std::string> no_choice;
+  return Choice::create("-c", "--choice", "You have no choice", no_choice);
+}
+} // namespace
+
+TEST_CASE("Choices") {
+  using namespace ArgParse;
+
+  auto parser = ArgumentParser::create("Parse some stuff.");
+
+  SECTION("No Choice") {
+    CHECK_THROWS_AS(create_no_option(), std::invalid_argument);
+  }
+
+  SECTION("Multiple Choice(s)") {
+    std::vector<std::string> choices{"first", "SECOND", "third", "multi word"};
+    auto choice =
+        Choice::create("-c", "--choice", "Some valid choices", choices);
+    parser->add_option(choice);
+
+    SECTION("valid short choice") {
+      ArgSeq args{"<exe>", "-c", "first"};
+      Tests::ArgParseResult apr(parser, args, false, 0);
+      CHECK(apr.check_outcome());
+    }
+
+    SECTION("valid long choice") {
+      ArgSeq args{"<exe>", "--choice", "third"};
+      Tests::ArgParseResult apr(parser, args, false, 0);
+      CHECK(apr.check_outcome());
+    }
+
+    SECTION("valid long= choice") {
+      ArgSeq args{"<exe>", "--choice=multi word"};
+      Tests::ArgParseResult apr(parser, args, false, 0);
+      CHECK(apr.check_outcome());
+    }
+
+    SECTION("valid choice, case-insensitive") {
+      ArgSeq args{"<exe>", "-c", "sEcOnD"};
+      Tests::ArgParseResult apr(parser, args, false, 0);
+      CHECK(apr.check_outcome());
+    }
+
+    SECTION("invalid choice") {
+      ArgSeq args{"<exe>", "-c", "Invalid Choice"};
+      Tests::ArgParseResult apr(parser, args, true, 1);
+      CHECK(apr.check_outcome());
+      CHECK(apr.cerr_contains("Usage:"));
+      CHECK(apr.cerr_contains("Invalid Choice"));
+    }
   }
 }
 
@@ -257,6 +325,7 @@ TEST_CASE("Positionals") {
     SECTION("too few") {
       ArgSeq args{"<exe>"};
       Tests::ArgParseResult apr(parser, args, true, 1);
+      CHECK(apr.check_outcome());
       CHECK(!value->is_complete());
       CHECK(apr.cerr_contains("Wrong number"));
     }
@@ -264,6 +333,7 @@ TEST_CASE("Positionals") {
     SECTION("too many") {
       ArgSeq args{"<exe>", "1", "200"};
       Tests::ArgParseResult apr(parser, args, true, 1);
+      CHECK(apr.check_outcome());
 
       CHECK(value->is_complete());
 
@@ -276,6 +346,7 @@ TEST_CASE("Positionals") {
     SECTION("invalid value") {
       ArgSeq args{"<exe>", "not a number"};
       Tests::ArgParseResult apr(parser, args, true, 1);
+      CHECK(apr.check_outcome());
       CHECK(apr.cerr_contains("'not a number'"));
     }
   }
@@ -307,6 +378,7 @@ TEST_CASE("Positionals") {
     SECTION("too few") {
       ArgSeq args{"<exe>"};
       Tests::ArgParseResult apr(parser, args, true, 1);
+      CHECK(apr.check_outcome());
       CHECK(!value->is_complete());
       CHECK(apr.cerr_contains("Wrong number"));
     }
@@ -314,6 +386,7 @@ TEST_CASE("Positionals") {
     SECTION("invalid value") {
       ArgSeq args{"<exe>", "1", "2", "not a number"};
       Tests::ArgParseResult apr(parser, args, true, 1);
+      CHECK(apr.check_outcome());
       CHECK(apr.cerr_contains("'not a number'"));
     }
   }
@@ -354,6 +427,7 @@ TEST_CASE("Positionals") {
     SECTION("invalid value") {
       ArgSeq args{"<exe>", "1", "2", "not a number"};
       Tests::ArgParseResult apr(parser, args, true, 1);
+      CHECK(apr.check_outcome());
       CHECK(apr.cerr_contains("'not a number'"));
     }
   }
@@ -371,18 +445,21 @@ TEST_CASE("Detect invalid values") {
   SECTION("Integer w. trailing text") {
     ArgSeq args{"<exe>", "23tail"};
     Tests::ArgParseResult apr(parser, args, true, 1);
+    CHECK(apr.check_outcome());
     CHECK(apr.cerr_contains("Could not completely convert"));
   }
 
   SECTION("Integer from float") {
     ArgSeq args{"<exe>", "23.5"};
     Tests::ArgParseResult apr(parser, args, true, 1);
+    CHECK(apr.check_outcome());
     CHECK(apr.cerr_contains("Could not completely convert"));
   }
 
   SECTION("Multi-word string") {
     ArgSeq args{"<exe>", "--sval", "word after word"};
     Tests::ArgParseResult apr(parser, args, false, 0);
+    CHECK(apr.check_outcome());
     CHECK(option->value() == "word after word");
   }
 }
@@ -435,6 +512,8 @@ TEST_CASE("Convenience functions") {
   auto ltuae = option<bool>(parser, "--42", "--42",
                             "Whether or not to show the answer.");
 
+  auto a_choice = choice(parser, "-c", "--choice", "Choose one",
+                         {"first", "Second", "Third"});
   auto one = argument<std::string>(parser, "one", Nargs::one, "One arg.");
   auto some =
       argument<double>(parser, "some", Nargs::one_or_more, "One or more.");
@@ -442,12 +521,11 @@ TEST_CASE("Convenience functions") {
   SECTION("Help") {
     ArgSeq args{"<exe>", "--help"};
     Tests::ArgParseResult apr(parser, args, true, 0);
+    CHECK(apr.check_outcome());
     CHECK(apr.cout_contains(description));
     CHECK(apr.cout_contains("Usage:"));
     std::vector<std::string> placeholders{
-        "--42 42]",
-        "ONE",
-        "SOME [SOME ...]",
+        "--42 42]", "--choice CHOICE", "Third", "ONE", "SOME [SOME ...]",
     };
     for (const auto ph : placeholders) {
       // If one of these tests fails, Catch2 makes it hard to see the actual
@@ -460,8 +538,10 @@ TEST_CASE("Convenience functions") {
   }
 
   SECTION("Verify options/args were added to parser") {
-    ArgSeq args{"<exe>", "-s", "--long", "--42=1", "une", "2", "3"};
-    Tests::ArgParseResult apr(parser, args, true, 0);
+    ArgSeq args{"<exe>", "-s",  "--long", "--42=1", "-c",
+                "THIRD", "une", "2",      "3"};
+    Tests::ArgParseResult apr(parser, args, false, 0);
+    CHECK(apr.check_outcome());
     CHECK(short_flag->is_set());
     CHECK(long_flag->is_set());
     CHECK(ltuae->value());

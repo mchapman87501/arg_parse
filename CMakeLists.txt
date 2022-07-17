@@ -18,10 +18,12 @@ option(ARG_PARSE_BUILD_TESTS "Build the test targets" ${ARG_PARSE_STANDALONE})
 
 set(SOURCES
     src/argument_parser.cpp
+    src/choice.cpp
     src/flag.cpp
     src/option.cpp
     src/parse_result.cpp
-    src/help_fmt.cpp)
+    src/help_fmt.cpp
+    src/value_converter.cpp)
 
 add_library(arg_parse SHARED ${SOURCES})
 target_compile_features(arg_parse PUBLIC cxx_std_20)
@@ -53,6 +55,7 @@ set(HEADERS
     include/arg_parse.hpp
     include/argument_parser.hpp
     include/argument.hpp
+    include/choice.hpp
     include/convenience.hpp
     include/flag.hpp
     include/help_fmt.hpp

@@ -17,8 +17,9 @@ void show_output(std::string_view cout_str, std::string_view cerr_str) {
 
 ArgParseResult::ArgParseResult(const ArgParse::ArgumentParser::Ptr parser,
                                const ArgParse::ArgSeq &args, bool should_exit,
-                               int expected_code)
-    : m_should_exit(should_exit), m_expected_code(expected_code) {
+                               int expected_code, bool verbose)
+    : m_should_exit(should_exit), m_expected_code(expected_code),
+      m_verbose(verbose) {
   std::ostringstream couts;
   std::ostringstream cerrs;
 
@@ -33,7 +34,6 @@ ArgParseResult::ArgParseResult(const ArgParse::ArgumentParser::Ptr parser,
   }
   m_cout = couts.str();
   m_cerr = cerrs.str();
-  check_outcome();
 }
 
 bool ArgParseResult::check_outcome() const {
@@ -55,7 +55,7 @@ bool ArgParseResult::check_outcome() const {
     }
   }
 
-  if (!result) {
+  if (!result || m_verbose) {
     show_output(m_cout, m_cerr);
   }
 

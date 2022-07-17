@@ -15,16 +15,17 @@ class ArgParseResult {
   const int m_expected_code;
   int m_actual_code;
 
+  const bool m_verbose;
   std::string m_cout;
   std::string m_cerr;
-
-  // Answer whether condition() == expected; dump diagnostics if not.
-  bool check_outcome() const;
 
 public:
   ArgParseResult(const ArgParse::ArgumentParser::Ptr parser,
                  const ArgParse::ArgSeq &args, bool should_exit,
-                 int expected_code);
+                 int expected_code, bool verbose = false);
+
+  // Answer whether condition() == expected; dump diagnostics if not.
+  bool check_outcome() const;
 
   std::string_view cout() const { return m_cout; }
   std::string_view cerr() const { return m_cerr; }
