@@ -36,15 +36,15 @@ jobs:
       name: Build arg_parse
       run: |
         mkdir -p build_artifacts
-        docker run --rm -v${PWD}:/source --user root ${{ env.name_tag }}
+        docker run --rm -v${PWD}:/source --user root ${{ env.img_name_tag }}
     -
       name: Run coverage tests
       run: |
-        docker run --rm -v${PWD}:/source --user root ${{ env.name_tag }} "/source/scripts/docker/in_container/test_with_coverage.sh"
+        docker run --rm -v${PWD}:/source --user root ${{ env.img_name_tag }} "/source/scripts/docker/in_container/test_with_coverage.sh"
     -
       name: Test package installation
       run: |
-        docker run --rm -v${PWD}:/source --user root ${{ env.name_tag }} "/source/scripts/docker/in_container/test_installed.sh"
+        docker run --rm -v${PWD}:/source --user root ${{ env.img_name_tag }} "/source/scripts/docker/in_container/test_installed.sh"
     -
       name: Archive artifacts
       uses: actions/upload-artifact@v3
