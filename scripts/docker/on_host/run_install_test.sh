@@ -3,4 +3,4 @@ set -e -u
 
 mkdir -p build_artifacts
 docker run --rm -v${PWD}:/source \
-    build_arg_parse "/source/docker_scripts/in_container/test_installed.sh"
+    build_arg_parse "/source/scripts/docker/in_container/test_installed.sh"

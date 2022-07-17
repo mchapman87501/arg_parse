@@ -4,6 +4,8 @@ This is a small library to help with command-line option/argument parsing.
 
 Why not just use an existing argument parsing package?  Writing one for myself provided an excuse to use C++20 language features.
 
+The API is heavily influenced by Python's [arg_parse](https://docs.python.org/3/library/argparse.html#module-argparse) module, which I really like.
+
 ![Github Docker CI](https://github.com/mchapman87501/arg_parse/actions/workflows/docker-image.yml/badge.svg)
 
 ## Examples
@@ -56,8 +58,8 @@ cmake --build .
 ### Using Docker
 
 ```shell
-sh ./docker_scripts/on_host/create_image.sh
-sh ./docker_scripts/on_host/run_build.sh
+sh ./scripts/docker//on_host/create_image.sh
+sh ./scripts/docker//on_host/run_build.sh
 # Check './build_artifacts' for built executables/libraries.
 ```
 
@@ -77,8 +79,8 @@ open ./coverage_report/index.html
 ### Using Docker
 
 ```shell
-sh ./docker_scripts/on_host/create_image.sh
-sh ./docker_scripts/on_host/run_tests.sh
+sh ./scripts/docker//on_host/create_image.sh
+sh ./scripts/docker//on_host/run_tests.sh
 # If all tests pass:
 open ./build_artifacts/coverage_report/index.html
 ```
