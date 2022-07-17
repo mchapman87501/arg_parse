@@ -6,4 +6,4 @@ cd build/debug
 
 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../..
 cmake --build . --target arg_parse_coverage_report
-
+open arg_parse_coverage_report/index.html
