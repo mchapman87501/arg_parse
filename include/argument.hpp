@@ -37,7 +37,7 @@ template <typename T> struct Argument : public IArgument {
    *
    * @return std::string A string to be included in any "Usage:" message
    */
-  std::string usage() const override {
+  [[nodiscard]] std::string usage() const override {
     return Internal::arg_usage_str(m_name, m_nargs);
   }
 
@@ -47,7 +47,7 @@ template <typename T> struct Argument : public IArgument {
    *
    * @return std::string A help message
    */
-  std::string help() const override {
+  [[nodiscard]] std::string help() const override {
     return Internal::arg_help_block(m_name, m_nargs, m_help_msg);
   }
 
@@ -58,7 +58,7 @@ template <typename T> struct Argument : public IArgument {
    * @return Nargs The number of positional arguments that can be supplied for
    * this spec
    */
-  Nargs nargs() const override { return m_nargs; }
+  [[nodiscard]] Nargs nargs() const override { return m_nargs; }
 
   /**
    * @brief Consume all positional command-line arguments for this spec.
@@ -95,7 +95,7 @@ template <typename T> struct Argument : public IArgument {
    * @return std::vector<T> The sequence of command-line arguments matched by
    * this spec
    */
-  std::vector<T> values() const { return m_values; }
+  [[nodiscard]] std::vector<T> values() const { return m_values; }
 
   /**
    * @brief Call this after calling parse, to find out whether this spec found
@@ -104,7 +104,7 @@ template <typename T> struct Argument : public IArgument {
    * @return true If this spec got all of its required values
    * @return false If it did not
    */
-  bool is_complete() const override {
+  [[nodiscard]] bool is_complete() const override {
     switch (m_nargs) {
     case Nargs::one:
       return m_values.size() == 1;
@@ -123,7 +123,7 @@ template <typename T> struct Argument : public IArgument {
    *
    * @return size_t The number of command-line arguments matched by this spec.
    */
-  size_t num_values() const override { return m_values.size(); }
+  [[nodiscard]] size_t num_values() const override { return m_values.size(); }
 
 protected:
   Argument(std::string_view name, Nargs nargs, std::string_view help_msg)

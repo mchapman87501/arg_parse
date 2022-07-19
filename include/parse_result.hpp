@@ -2,6 +2,7 @@
 
 #include "aliases.hpp"
 #include <string>
+#include <utility>
 
 namespace ArgParse {
 
@@ -12,18 +13,18 @@ namespace ArgParse {
  */
 struct ParseResult {
   ParseResult(bool matched, OptErrMsg error_msg)
-      : m_matched(matched), m_error_msg(error_msg) {}
+      : m_matched(matched), m_error_msg(std::move(error_msg)) {}
 
-  static ParseResult no_match() { return ParseResult(false, {}); }
+  static ParseResult no_match() { return {false, {}}; }
 
   static ParseResult match_with_error(std::string_view error_msg) {
-    return ParseResult(true, std::string(error_msg));
+    return {true, std::string(error_msg)};
   }
 
-  static ParseResult match() { return ParseResult(true, {}); }
+  static ParseResult match() { return {true, {}}; }
 
-  bool matched() const { return m_matched; }
-  OptErrMsg error_msg() const { return m_error_msg; }
+  [[nodiscard]] bool matched() const { return m_matched; }
+  [[nodiscard]] OptErrMsg error_msg() const { return m_error_msg; }
 
 private:
   const bool m_matched;

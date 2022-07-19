@@ -30,7 +30,7 @@ struct Flag : public virtual IOption {
    *
    * @return whether or not this flag has been set
    */
-  virtual bool is_set() const = 0;
+  [[nodiscard]] virtual bool is_set() const = 0;
 };
 
 } // namespace ArgParse

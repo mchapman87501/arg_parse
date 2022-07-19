@@ -62,7 +62,7 @@ struct ArgumentParser {
    * @return true if the command-line arguments were invalid
    * @return false if the command-line arguments were valid
    */
-  virtual bool should_exit() const = 0;
+  [[nodiscard]] virtual bool should_exit() const = 0;
 
   /**
    * @brief Get the recommended exit code.
@@ -72,7 +72,7 @@ struct ArgumentParser {
    *
    * @return int The recommended exit code
    */
-  virtual int exit_code() const = 0;
+  [[nodiscard]] virtual int exit_code() const = 0;
 
   /**
    * @brief Print a parse error message to cerr, followed by usage.
@@ -83,6 +83,6 @@ struct ArgumentParser {
   virtual void show_error(std::string_view msg, int exit_code) = 0;
 
 protected:
-  ArgumentParser() {}
+  ~ArgumentParser() = default;
 };
 } // namespace ArgParse

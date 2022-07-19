@@ -134,9 +134,13 @@ public:
     validate_arg_specs();
   }
 
-  bool should_exit() const override { return m_exit_code.has_value(); }
+  [[nodiscard]] bool should_exit() const override {
+    return m_exit_code.has_value();
+  }
 
-  int exit_code() const override { return m_exit_code.value_or(0); }
+  [[nodiscard]] int exit_code() const override {
+    return m_exit_code.value_or(0);
+  }
 
   void show_error(std::string_view message, int exit_code) override {
     std::cerr << "Error: " << message << std::endl;

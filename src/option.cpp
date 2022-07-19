@@ -7,21 +7,21 @@ using namespace std;
 
 namespace {
 struct ParsedOptVal {
-  static ParsedOptVal no_match() { return ParsedOptVal(false, "", {}); }
+  static ParsedOptVal no_match() { return {false, "", {}}; }
 
   static ParsedOptVal no_value_provided(string_view option_arg) {
     string error_msg("No value provided: '" + string(option_arg) + "'");
-    return ParsedOptVal(true, "", string(error_msg));
+    return {true, "", string(error_msg)};
   }
 
-  static ParsedOptVal match(string_view strval) {
-    return ParsedOptVal(true, strval, {});
-  }
+  static ParsedOptVal match(string_view strval) { return {true, strval, {}}; }
 
-  bool matched() const { return m_parse_result.matched(); }
-  bool has_error() const { return m_parse_result.error_msg().has_value(); }
-  ParseResult as_parse_result() const { return m_parse_result; }
-  string_view value() const { return m_strval; }
+  [[nodiscard]] bool matched() const { return m_parse_result.matched(); }
+  [[nodiscard]] bool has_error() const {
+    return m_parse_result.error_msg().has_value();
+  }
+  [[nodiscard]] ParseResult as_parse_result() const { return m_parse_result; }
+  [[nodiscard]] string_view value() const { return m_strval; }
 
 private:
   ParseResult m_parse_result;

@@ -6,18 +6,17 @@ namespace ArgParse {
 struct FlagImpl : public Flag {
   FlagImpl(std::string_view short_name, std::string_view long_name,
            std::string_view help_msg)
-      : m_short(short_name), m_long(long_name), m_help_msg(help_msg),
-        m_is_set(false) {}
+      : m_short(short_name), m_long(long_name), m_help_msg(help_msg) {}
 
-  std::string usage() const override {
+  [[nodiscard]] std::string usage() const override {
     return Internal::flag_usage_str(m_short, m_long);
   }
 
-  std::string help() const override {
+  [[nodiscard]] std::string help() const override {
     return Internal::flag_help_block(m_short, m_long, m_help_msg);
   }
 
-  bool is_set() const override { return m_is_set; }
+  [[nodiscard]] bool is_set() const override { return m_is_set; }
 
   ParseResult parse(ArgSeq &args) override {
     if (!args.empty()) {
@@ -36,7 +35,7 @@ private:
   const std::string m_short;
   const std::string m_long;
   const std::string m_help_msg;
-  bool m_is_set;
+  bool m_is_set{false};
 };
 
 Flag::Ptr Flag::create(std::string_view short_name, std::string_view long_name,

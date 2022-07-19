@@ -14,8 +14,8 @@ namespace ArgParse {
 struct IOption {
   using Ptr = std::shared_ptr<IOption>;
 
-  virtual std::string usage() const = 0;
-  virtual std::string help() const = 0;
+  [[nodiscard]] virtual std::string usage() const = 0;
+  [[nodiscard]] virtual std::string help() const = 0;
 
   virtual ParseResult parse(ArgSeq &args) = 0;
 };

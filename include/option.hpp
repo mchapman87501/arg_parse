@@ -65,13 +65,13 @@ template <typename T> struct Option : public IOption {
    *
    * @return T the value of this option
    */
-  T value() const { return m_value; }
+  [[nodiscard]] T value() const { return m_value; }
 
-  std::string usage() const override {
+  [[nodiscard]] std::string usage() const override {
     return Internal::option_usage_str(m_short, m_long);
   }
 
-  std::string help() const override {
+  [[nodiscard]] std::string help() const override {
     return Internal::option_help_block(m_short, m_long, m_help_msg);
   }
 
@@ -86,7 +86,7 @@ protected:
          std::string_view help_msg)
       : m_short(short_name), m_long(long_name), m_help_msg(help_msg) {}
 
-  virtual bool valid_value(const T &v) { return true; }
+  [[nodiscard]] virtual bool valid_value(const T &v) const { return true; }
 };
 
 } // namespace ArgParse

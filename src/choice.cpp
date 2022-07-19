@@ -26,10 +26,9 @@ struct ChoiceImpl : public Choice {
     }
   }
 
-  std::string help() const override {
+  [[nodiscard]] std::string help() const override {
     std::ostringstream outs;
     outs << "  Valid values (case-insensitive): (";
-  std:;
     std::string sep = "";
     for (const auto choice : m_valid_choices) {
       outs << sep << "'" << choice << "'";
@@ -42,7 +41,7 @@ struct ChoiceImpl : public Choice {
   }
 
 protected:
-  bool valid_value(const std::string &v) override {
+  [[nodiscard]] bool valid_value(const std::string &v) const override {
     const std::string v_lcase = lowercase(v);
     for (const auto &curr_choice : m_valid_choices) {
       const std::string curr_lcase = lowercase(curr_choice);
