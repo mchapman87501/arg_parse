@@ -158,7 +158,7 @@ TEST_CASE("Using Flags and Options") {
       ArgSeq args{"<exe>", "-o"};
       parser->parse_args(args);
       CHECK(parser->should_exit());
-      CHECK(output->value() == std::filesystem::path(""));
+      CHECK(output->value() == std::filesystem::path("some_location.txt"));
     }
 
     SECTION("Invoke with long option") {
@@ -173,7 +173,7 @@ TEST_CASE("Using Flags and Options") {
       ArgSeq args{"<exe>", "--output"};
       parser->parse_args(args);
       CHECK(parser->should_exit());
-      CHECK(output->value() == std::filesystem::path(""));
+      CHECK(output->value() == std::filesystem::path("some_location.txt"));
     }
 
     SECTION("Invoke with long= option") {
@@ -189,7 +189,7 @@ TEST_CASE("Using Flags and Options") {
       ArgSeq args{"<exe>", "--output="};
       parser->parse_args(args);
       CHECK(parser->should_exit());
-      CHECK(output->value() == std::filesystem::path(""));
+      CHECK(output->value() == std::filesystem::path("some_location.txt"));
     }
 
     SECTION("Invoke with long=, missing value, trailing positional") {
@@ -200,7 +200,7 @@ TEST_CASE("Using Flags and Options") {
       ArgSeq args{"<exe>", "--output=", "the required value"};
       Tests::ArgParseResult apr(parser, args, true, 1);
       CHECK(apr.check_outcome());
-      CHECK(output->value() == std::filesystem::path(""));
+      CHECK(output->value() == std::filesystem::path("some_location.txt"));
     }
 
     SECTION("Invoke with invalid option value") {
