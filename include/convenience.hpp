@@ -33,12 +33,15 @@ Flag::Ptr flag(ArgumentParser::Ptr parser, std::string_view short_name,
  * @param short_name The short, single-dash name of the Option ("-o")
  * @param long_name The long, double-dash name of the Option ("--output")
  * @param help_msg A description of the purpose of the Option
+ * @param default_value The default value for the Option
  * @return auto The new Option
  */
 template <typename T>
 auto option(ArgumentParser::Ptr parser, std::string_view short_name,
-            std::string_view long_name, std::string_view help_msg) {
-  auto result = Option<T>::create(short_name, long_name, help_msg);
+            std::string_view long_name, std::string_view help_msg,
+            const T default_value = {}) {
+  auto result =
+      Option<T>::create(short_name, long_name, help_msg, default_value);
   parser->add_option(result);
   return result;
 }

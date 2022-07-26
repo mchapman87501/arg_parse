@@ -35,8 +35,9 @@ template <typename T> struct Option : public IOption {
    * @return Ptr A pointer to the created instance
    */
   static Ptr create(std::string_view short_name, std::string_view long_name,
-                    std::string_view help_msg) {
-    return std::shared_ptr<Option>(new Option(short_name, long_name, help_msg));
+                    std::string_view help_msg, const T default_value = {}) {
+    return std::shared_ptr<Option>(
+        new Option(short_name, long_name, help_msg, default_value));
   }
 
   ParseResult parse(ArgSeq &args) override {
@@ -83,8 +84,9 @@ protected:
   T m_value;
 
   Option(std::string_view short_name, std::string_view long_name,
-         std::string_view help_msg)
-      : m_short(short_name), m_long(long_name), m_help_msg(help_msg) {}
+         std::string_view help_msg, const T default_value)
+      : m_short(short_name), m_long(long_name), m_help_msg(help_msg),
+        m_value(default_value) {}
 
   [[nodiscard]] virtual bool valid_value(const T &v) const { return true; }
 };

@@ -19,7 +19,8 @@ struct Choice : public Option<std::string> {
 
 protected:
   Choice(std::string_view short_name, std::string_view long_name,
-         std::string_view help_msg)
-      : Option<std::string>(short_name, long_name, help_msg) {}
+         std::string_view help_msg, std::string_view default_choice)
+      : Option<std::string>(short_name, long_name, help_msg,
+                            std::string(default_choice)) {}
 };
 } // namespace ArgParse

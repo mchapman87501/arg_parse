@@ -17,8 +17,9 @@ namespace ArgParse {
 struct ChoiceImpl : public Choice {
   ChoiceImpl(std::string_view short_name, std::string_view long_name,
              std::string_view help_msg,
-             const std::vector<std::string> &valid_choices)
-      : Choice(short_name, long_name, help_msg),
+             const std::vector<std::string> &valid_choices,
+             std::string_view default_choice)
+      : Choice(short_name, long_name, help_msg, default_choice),
         m_valid_choices(valid_choices) {
 
     if (valid_choices.empty()) {
@@ -60,7 +61,9 @@ Choice::Ptr Choice::create(std::string_view short_name,
                            std::string_view long_name,
                            std::string_view help_msg,
                            const std::vector<std::string> &valid_choices) {
-  return Choice::Ptr(
-      new ChoiceImpl(short_name, long_name, help_msg, valid_choices));
+  const auto default_choice =
+      valid_choices.empty() ? "" : valid_choices.front();
+  return Choice::Ptr(new ChoiceImpl(short_name, long_name, help_msg,
+                                    valid_choices, default_choice));
 };
 } // namespace ArgParse

@@ -27,7 +27,7 @@ TEST_CASE("Show help") {
       Flag::create("--long-only", "--long-only", "I have only a long name.");
   // Explicit booleans are supported, but the values must be 0 or 1.
   auto ltuae = Option<bool>::create("--42", "--42",
-                                    "Whether or not to show the answer.");
+                                    "Whether or not to show the answer.", true);
   auto output = Option<std::filesystem::path>::create(
       "-o", "--output", "Where to write the output.");
 
@@ -134,7 +134,7 @@ TEST_CASE("Using Flags and Options") {
 
   SECTION("Using short|long Options") {
     auto output = Option<std::filesystem::path>::create(
-        "-o", "--output", "Where to write the output");
+        "-o", "--output", "Where to write the output", "some_location.txt");
     parser->add_option(output);
 
     SECTION("Typed Options") {
