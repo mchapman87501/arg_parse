@@ -78,9 +78,9 @@ If the steps above succeed, you can find a coverage report in `build/profile/arg
 ```shell
 sh ./scripts/docker/on_host/create_image.sh
 sh ./scripts/docker/on_host/run_tests.sh
-# If all tests pass:
-open ./build_artifacts/coverage_report/index.html
 ```
+
+If the steps above succeed, you can find a coverage report in `build_artifacts/arg_parse_coverage_report/index.html`
 
 ## Formatting with clang-format
 
