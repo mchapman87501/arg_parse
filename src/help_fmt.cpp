@@ -1,4 +1,5 @@
 #include "help_fmt.hpp"
+#include <algorithm>
 #include <cctype>
 #include <sstream>
 

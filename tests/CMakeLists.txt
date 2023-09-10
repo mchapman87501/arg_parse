@@ -1,6 +1,9 @@
 # Build a version of the library that supports test coverage
-if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-    append_coverage_compiler_flags()
+if(${CMAKE_BUILD_TYPE} STREQUAL "Profile")
+    # https://gcovr.com/en/stable/cookbook.html#oos-cmake
+    # This should work with both gcc and clang.
+    set(CMAKE_C_FLAGS_PROFILE "-O0 --coverage")
+    set(CMAKE_CXX_FLAGS_PROFILE "-O0 --coverage")
 endif()
 
 string(REPLACE "src/" ";../src/" COV_SOURCES ${SOURCES})
@@ -24,10 +27,52 @@ add_custom_command(TARGET test_arg_parse
     COMMAND find ${CMAKE_BINARY_DIR} -name '*.gcda' -exec rm "{}" "';'"
 )
 
-setup_target_for_coverage_lcov(NAME arg_parse_coverage_report
-    EXECUTABLE ctest
-    DEPENDENCIES
-    test_arg_parse
-    EXCLUDE
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/*" "/opt/homebrew/*" "/Applications/*"
-    "/usr/*")
+# LCOV 2.0 appears to be the reason why I needed to change this.
+# See discussion at
+# https://bytemeta.vip/repo/linux-test-project/lcov/issues/220
+set(REPORT_NAME arg_parse_coverage_report)
+
+set(CLEAN_PROFILE_CMD
+    lcov --directory ${CMAKE_BINARY_DIR} -b ${PROJECT_SOURCE_DIR}/src --zerocounters)
+
+# Grrr: as of this writing, homebrew mac installs lcov 2.0.
+# linux distros use lcov 1.x.
+# 2.0 requires "--ignore-errors inconsistent,inconsistent" when running w.
+# clang profiling output.  1.x does not understand those options.
+set(LCOV_IGNORE_ARG "--ignore-errors=inconsistent,inconsistent")
+execute_process(
+    COMMAND lcov "--version"
+    OUTPUT_VARIABLE LCOV_VERSION_OUT)
+
+if(LCOV_VERSION_OUT MATCHES "LCOV version 1\.")
+    set(LCOV_IGNORE_ARG "")
+endif()
+
+set(CAPTURE_PROFILE_CMD
+    lcov --capture --directory ${CMAKE_BINARY_DIR}
+    -b ${PROJECT_SOURCE_DIR}/src
+    --no-external
+    ${LCOV_IGNORE_ARG}
+    --output-file coverage.info)
+set(GEN_REPORT_CMD
+    genhtml
+    --demangle-cpp
+    --rc derive_function_end_line=0
+    --output-directory ${CMAKE_BINARY_DIR}/${REPORT_NAME}
+    coverage.info)
+
+add_custom_command(
+    OUTPUT ${CMAKE_BINARY_DIR}/${REPORT_NAME}/index.html
+    COMMAND ${CLEAN_PROFILE_CMD}
+    COMMAND ctest
+    COMMAND ${CAPTURE_PROFILE_CMD}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/${REPORT_NAME}
+    COMMAND ${GEN_REPORT_CMD}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    DEPENDS test_arg_parse
+)
+
+add_custom_target(
+    ${REPORT_NAME}
+    DEPENDS ${CMAKE_BINARY_DIR}/${REPORT_NAME}/index.html
+)

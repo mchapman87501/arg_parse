@@ -1,9 +1,8 @@
-cmake_policy(VERSION 3.22)
 cmake_minimum_required(VERSION 3.22)
 
 set(version_major 1)
 set(version_minor 0)
-set(version_patch 0)
+set(version_patch 1)
 set(version ${version_major}.${version_minor}.${version_patch})
 project(arg_parse VERSION ${version})
 
@@ -108,11 +107,9 @@ export(EXPORT arg_parse_targets
 
 if(ARG_PARSE_BUILD_TESTS)
     message(STATUS "Enable ARG_PARSE_BUILD_TESTS testing.")
-    include(cmake_modules/CodeCoverage.cmake)
-    find_package(Catch2 3 REQUIRED)
-    enable_testing()
-
     include(CTest)
+
+    find_package(Catch2 3 REQUIRED)
     include(Catch)
 
     add_subdirectory(tests)

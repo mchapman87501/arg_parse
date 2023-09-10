@@ -2,7 +2,7 @@
 
 This is a small library to help with command-line option/argument parsing.
 
-Why not just use an existing argument parsing package?  Writing one for myself provided an excuse to use C++20 language features.
+Why not just use an existing argument parsing package? Writing one for myself provided an excuse to use C++20 language features.
 
 The API is heavily influenced by Python's [arg_parse](https://docs.python.org/3/library/argparse.html#module-argparse) module, which I really like.
 
@@ -11,7 +11,6 @@ The API is heavily influenced by Python's [arg_parse](https://docs.python.org/3/
 ## Examples
 
 See `tests/package_configuration_tests/use_arg_parse.cpp`, and `tests/src/test_arg_parse.cpp`.
-
 
 ```c++
 #include "arg_parse.hpp"
@@ -40,26 +39,26 @@ int main(int argc, char **argv) {
 #### Dependencies
 
 In order to build and test on macOS or linux you'll need the following (at least):
-* [CMake](https://www.cmake.org)
-* A C++ compiler ;)
-* [Catch2](https://github.com/catchorg/Catch2)
-* [lcov](https://github.com/linux-test-project/lcov.git)
+
+- [CMake](https://www.cmake.org)
+- A C++ compiler ;)
+- [Catch2](https://github.com/catchorg/Catch2)
+- [lcov](https://github.com/linux-test-project/lcov.git)
 
 #### Compilation
 
 To compile:
+
 ```shell
-mkdir -p build/release
-cd build/release
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../..
-cmake --build .
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -B build/release -S .
+cmake --build build/release
 ```
 
 ### Using Docker
 
 ```shell
-sh ./scripts/docker//on_host/create_image.sh
-sh ./scripts/docker//on_host/run_build.sh
+sh ./scripts/docker/on_host/create_image.sh
+sh ./scripts/docker/on_host/run_build.sh
 # Check './build_artifacts' for built executables/libraries.
 ```
 
@@ -68,23 +67,20 @@ sh ./scripts/docker//on_host/run_build.sh
 ### On Host
 
 ```shell
-mkdir -p build/debug
-cd build/debug
-cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../..
-cmake --build . --target coverage_report
-# If all tests pass:
-open ./coverage_report/index.html
+cmake -DCMAKE_BUILD_TYPE=Profile -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -Bbuild/profile -S.
+cmake --build build/profile --target arg_parse_coverage_report
 ```
+
+If the steps above succeed, you can find a coverage report in `build/profile/arg_parse_coverage_report/index.html`.
 
 ### Using Docker
 
 ```shell
-sh ./scripts/docker//on_host/create_image.sh
-sh ./scripts/docker//on_host/run_tests.sh
+sh ./scripts/docker/on_host/create_image.sh
+sh ./scripts/docker/on_host/run_tests.sh
 # If all tests pass:
 open ./build_artifacts/coverage_report/index.html
 ```
-
 
 ## Formatting with clang-format
 
