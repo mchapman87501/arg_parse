@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "bugfix_*" ]
   pull_request:
 
 jobs:
@@ -47,7 +47,7 @@ jobs:
         docker run --rm -v${PWD}:/source --user root ${{ env.img_name_tag }} "/source/scripts/docker/in_container/test_installed.sh"
     -
       name: Archive artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: build-artifacts
         path: build_artifacts

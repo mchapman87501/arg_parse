@@ -4,7 +4,7 @@ set -e -u
 
 BA_DIR=/source/build_artifacts
 
-cd ${HOME}
+cd /source
 
 cmake --preset release --fresh
 cmake --build --preset release
