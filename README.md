@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
 In order to build and test on macOS or linux you'll need the following (at least):
 
-- [CMake](https://www.cmake.org)
+- [CMake](https://www.cmake.org) version 3.25 or later
 - A C++ compiler ;)
 - [Catch2](https://github.com/catchorg/Catch2)
 - [lcov](https://github.com/linux-test-project/lcov.git)
@@ -50,8 +50,8 @@ In order to build and test on macOS or linux you'll need the following (at least
 To compile:
 
 ```shell
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -B build/release -S .
-cmake --build build/release
+cmake --preset release
+cmake --build --preset release
 ```
 
 ### Using Docker
@@ -67,8 +67,8 @@ sh ./scripts/docker/on_host/run_build.sh
 ### On Host
 
 ```shell
-cmake -DCMAKE_BUILD_TYPE=Profile -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -Bbuild/profile -S.
-cmake --build build/profile --target arg_parse_coverage_report
+cmake --preset profile
+cmake --build --preset profile --target arg_parse_coverage_report
 ```
 
 If the steps above succeed, you can find a coverage report in `build/profile/arg_parse_coverage_report/index.html`.
@@ -95,8 +95,7 @@ clang-format -i $(fd '.*\.(cpp|hpp)')
 If you have [clang-tidy](https://clang.llvm.org/extra/clang-tidy/) on your PATH:
 
 ```shell
-mkdir -p build/debug
-cd build/debug
-cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../..
-clang-tidy ../../src/*.cpp ../../tests/src/*.cpp
+cmake --preset default
+cmake --build --preset default
+clang-tidy -p build/default src/*.cpp tests/src/*.cpp
 ```

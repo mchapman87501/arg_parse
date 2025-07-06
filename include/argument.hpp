@@ -113,7 +113,7 @@ template <typename T> struct Argument : public IArgument {
     case Nargs::one_or_more:
       return m_values.size() > 0;
     }
-    return false; // Appease g++; should be unreachable
+    return false;
   }
 
   /**

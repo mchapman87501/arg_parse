@@ -78,11 +78,13 @@ private:
     case Nargs::one:
       return "1";
     case Nargs::zero_or_more:
+      // Shouldn't reach here, I think; a zero_or_more argument
+      // should be complete if it has zero values.
       return ">= 0";
     case Nargs::one_or_more:
       return ">= 1";
     }
-    return "?"; // Appease g++.  Shouldn't reach here.
+    return "?";
   }
 
   void validate_arg_specs() {

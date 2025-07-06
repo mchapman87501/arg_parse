@@ -7,6 +7,9 @@
 #include <string>
 #include <string_view>
 
+/**
+ * @brief Top-level namespace for this library.
+ */
 namespace ArgParse {
 
 /**

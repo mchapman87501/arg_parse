@@ -59,7 +59,7 @@ string arg_usage_str(string_view arg_name, Nargs nargs) {
   case Nargs::one_or_more:
     return placeholder_name + " [" + placeholder_name + " ...]";
   }
-  return placeholder_name; // Appease g++; should not reach here.
+  return placeholder_name;
 }
 
 string help_block(string_view usage_label, string_view help_msg) {
