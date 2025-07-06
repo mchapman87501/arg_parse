@@ -7,13 +7,14 @@ Run unit tests with coverage.
 
 EOF
 
-cd
-cmake -DCMAKE_BUILD_TYPE=Profile -Bbuild/profile -S/source
+cd /source
+cmake --version
+cmake --preset profile --fresh
 
 # Defer checking for test failures so we can 
 # copy any test output to build_artifacts.
 set +e
-cmake --build build/profile --target arg_parse_coverage_report
+cmake --build --preset profile --target arg_parse_coverage_report
 STATUS=$?
 
 set -e

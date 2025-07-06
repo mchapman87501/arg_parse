@@ -1,8 +1,8 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    git gcc python3 python3-pip cmake cmake-data \
+    git gcc python3 python3-pip cmake cmake-data ninja-build \
     lcov \
     && rm -rf /var/lib/apt/lists/*
 

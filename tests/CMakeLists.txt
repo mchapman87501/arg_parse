@@ -39,13 +39,25 @@ set(CLEAN_PROFILE_CMD
 # linux distros use lcov 1.x.
 # 2.0 requires "--ignore-errors inconsistent,inconsistent" when running w.
 # clang profiling output.  1.x does not understand those options.
-set(LCOV_IGNORE_ARG "--ignore-errors=inconsistent,inconsistent")
 execute_process(
     COMMAND lcov "--version"
     OUTPUT_VARIABLE LCOV_VERSION_OUT)
 
-if(LCOV_VERSION_OUT MATCHES "LCOV version 1\.")
-    set(LCOV_IGNORE_ARG "")
+# Update 20250704 attempt to address lcov 2.3.1-1 warning
+#   "WARNING: (unsupported) Function begin/end line exclusions not supported..."
+# and subsequent genhtml errors:
+
+# Presume LCOV version 1.x
+set(LCOV_IGNORE_ARG "")
+if(LCOV_VERSION_OUT MATCHES "LCOV version 2\.3")
+    set(LCOV_IGNORE_ARG "--ignore-errors=unsupported,inconsistent")
+elseif(LCOV_VERSION_OUT MATCHES "LCOV version 2\.")
+    set(LCOV_IGNORE_ARG "--ignore-errors=inconsistent,inconsistent")
+endif()
+
+set(GENHTML_IGNORE_ARG "")
+if(LCOV_VERSION_OUT MATCHES "LCOV version 2\.3")
+    set(GENHTML_IGNORE_ARG "--ignore-errors=category")
 endif()
 
 set(CAPTURE_PROFILE_CMD
@@ -56,6 +68,7 @@ set(CAPTURE_PROFILE_CMD
     --output-file coverage.info)
 set(GEN_REPORT_CMD
     genhtml
+    ${GENHTML_IGNORE_ARG}
     --demangle-cpp
     --rc derive_function_end_line=0
     --output-directory ${CMAKE_BINARY_DIR}/${REPORT_NAME}

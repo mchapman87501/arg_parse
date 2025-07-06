@@ -7,17 +7,12 @@ Verify the installed package can be used via CMake's find_package().
 
 EOF
 
-cd
-
-mkdir -p build/release
-cd build/release
-
+cd /source
+cmake --version
+cmake --preset release --fresh
+cmake --build --preset release
 INSTALL_DIR=${HOME}/local
-cmake -DCMAKE_BUILD_TYPE=Release /source
-cmake --build .
-cmake --install . --prefix ${INSTALL_DIR}
-
-cd ..
+cmake --install build/release --prefix=${INSTALL_DIR}
 
 mkdir pkg_consumer
 cd pkg_consumer

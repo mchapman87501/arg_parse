@@ -1,4 +1,6 @@
 /build
 /build_artifacts
+/pkg_consumer
 /.vscode
 .DS_Store
+CMakeUserPresets.json
